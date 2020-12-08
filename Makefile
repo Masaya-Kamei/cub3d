@@ -17,12 +17,13 @@ all		:	$(NAME)
 .c.o	:
 			$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $(<:.c=.o)
 
+# libmlx.dylib があると、$(LIBXNAME)が実行されない
 $(NAME)	:	$(LIBNAME) $(LIBXNAME) $(OBJS)
 			cp $(LIBX) ./
 			$(CC) $(CFLAGS) $(INCLUDE) $(LIB) $(LIBXNAME) $(OBJS) -o $(NAME)
 
 $(LIBNAME):
-			make -C $(LIBDIR)
+			make bonus -C $(LIBDIR)
 
 $(LIBXNAME):
 			make -C $(LIBXDIR)
@@ -34,9 +35,9 @@ clean	:
 
 fclean	:	clean
 			$(RM) $(NAME)
+			$(RM) $(LIBXNAME)
 			make fclean -C $(LIBDIR)
-			make fclean -C $(LIBXDIR)
 
 re		:	fclean all
 
-.PHONY	:	all clean fclean re
+.PHONY	:	all clean fclean re $(LIBNAME) $(LIBXNAME)
