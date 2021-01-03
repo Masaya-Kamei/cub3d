@@ -6,138 +6,100 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 14:41:50 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/02 14:53:56 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/03 17:34:43 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-static int	add_map_to_list(t_list **lst, char *line, int *map_end)
+static void	get_player_vectors(t_player *player, char dir, int x, int y)
 {
-	t_list	*new;
-
-	if (ft_strlen(line) == 0 && *lst == NULL)
-		free(line);
+	player->pos.x = x + 0.5;
+	player->pos.y = y + 0.5;
+	if (dir == 'N' || dir == 'S')
+	{
+		player->dir.x = 0;
+		player->dir.y = (dir == 'N') ? -1 : 1;
+	}
 	else
 	{
-		if (ft_strlen(line) == 0)
+		player->dir.y = 0;
+		player->dir.x = (dir == 'W') ? -1 : 1;
+	}
+	player->plane.x = -player->dir.y * tan(VIEW_ANGLE * PI / 180);
+	player->plane.y = player->dir.x * tan(VIEW_ANGLE * PI / 180);
+}
+
+int			check_characters_of_map_line(t_player *player, char *line, int y)
+{
+	int x;
+
+	x = 0;
+	while (line[x] != '\0')
+	{
+		if (line[x] == 'N' || line[x] == 'S'
+			|| line[x] == 'W' || line[x] == 'E')
 		{
-			*map_end = 1;
-			free(line);
+			if (player->pos.x != NOT_READ)
+				return (PLAYER_DOUBLE_READ);
+			get_player_vectors(player, line[x], x, y);
+			line[x] = '0';
 		}
-		else
+		else if (line[x] != '0' && line[x] != '1'
+			&& line[x] != '2' && line[x] != ' ')
 		{
-			if (*map_end == 1)
-				return (NOT_END_MAP);
-			if (!(new = ft_lstnew(line)))
-				return (MALLOC_ERROR);
-			ft_lstadd_back(lst, new);
+			if (y == 0)
+				return (INVALD_ELEMENT_OR_INVALID_CHARACTER);
+			else
+				return (INVALID_CHARACTER_IN_MAP);
 		}
+		x++;
 	}
 	return (SUCCESS);
 }
 
-t_list		*add_map_lines_to_list(t_data *d, int fd)
+int			add_map_line_to_list(t_list **lst, char *line)
 {
-	int		gnl_flag;
-	char	*line;
-	int		map_end;
-	t_list	*lst;
-	int		ret;
+	t_list		*new;
+	static int	map_end = 0;
 
-	gnl_flag = 1;
-	map_end = 0;
-	lst = NULL;
-	while (gnl_flag != 0)
+	if (ft_strlen(line) == 0)
 	{
-		if ((gnl_flag = get_next_line(fd, &line)) == -1)
-		{
-			ft_lstclear(&lst, free);
-			finish_reading_conf_file(d, fd, GNL_ERROR);
-		}
-		ret = add_map_to_list(&lst, line, &map_end);
-		if (ret != SUCCESS)
-		{
-			free(line);
-			ft_lstclear(&lst, free);
-			finish_reading_conf_file(d, fd, ret);
-		}
+		if (*lst != NULL)
+			map_end = 1;
+		free(line);
 	}
-	return (lst);
+	else
+	{
+		if (map_end == 1)
+			return (NOT_END_MAP);
+		if (!(new = ft_lstnew(line)))
+			return (MALLOC_ERROR);
+		ft_lstadd_back(lst, new);
+	}
+	return (SUCCESS);
 }
 
-void		create_map_from_list(t_data *d, int fd, t_list *lst, t_stage *stage)
+int			create_map_from_list(t_list *lst, t_stage *stage)
 {
 	t_list	*next;
 	int		i;
 
-	if ((stage->height = ft_lstsize(lst)) < 3)
-	{
-		ft_lstclear(&lst, free);
-		finish_reading_conf_file(d, fd, SMALL_MAP);
-	}
+	stage->height = ft_lstsize(lst);
 	if (!(stage->map = (char **)malloc(sizeof(char *) * (stage->height + 1))))
-	{
-		ft_lstclear(&lst, free);
-		finish_reading_conf_file(d, fd, MALLOC_ERROR);
-	}
+		return (MALLOC_ERROR);
 	stage->width = 0;
 	i = 0;
 	while (lst != NULL)
 	{
 		stage->map[i] = lst->content;
-		stage->width = MAX((int)ft_strlen(stage->map[i]), stage->width);
+		if ((int)ft_strlen(stage->map[i]) > stage->width)
+			stage->width = (int)ft_strlen(stage->map[i]);
 		i++;
 		next = lst->next;
 		free(lst);
 		lst = next;
 	}
 	stage->map[i] = NULL;
-}
-
-static void	get_player_vectors(t_data *d, char dir, int x, int y)
-{
-	d->player.pos.x = x + 0.5;
-	d->player.pos.y = y + 0.5;
-	if (dir == 'N' || dir == 'S')
-	{
-		d->player.dir.x = 0;
-		d->player.dir.y = (dir == 'N') ? -1 : 1;
-	}
-	else
-	{
-		d->player.dir.y = 0;
-		d->player.dir.x = (dir == 'W') ? -1 : 1;
-	}
-	d->player.plane.x = -d->player.dir.y * tan(VIEW_ANGLE * PI / 180);
-	d->player.plane.y = d->player.dir.x * tan(VIEW_ANGLE * PI / 180);
-	d->stage.map[y][x] = '0';
-}
-
-void		check_characters_of_map(t_data *d, int fd, int *player_flag)
-{
-	int x;
-	int y;
-
-	y = 0;
-	while (d->stage.map[y] != NULL)
-	{
-		x = 0;
-		while (d->stage.map[y][x] != '\0')
-		{
-			if (d->stage.map[y][x] == 'N' || d->stage.map[y][x] == 'S'
-				|| d->stage.map[y][x] == 'W' || d->stage.map[y][x] == 'E')
-			{
-				if (*player_flag == 1)
-					finish_reading_conf_file(d, fd, PLAYER_DOUBLE);
-				get_player_vectors(d, d->stage.map[y][x], x, y);
-				*player_flag = 1;
-			}
-			else if (d->stage.map[y][x] != '0' && d->stage.map[y][x] != '1'
-				&& d->stage.map[y][x] != '2' && d->stage.map[y][x] != ' ')
-				finish_reading_conf_file(d, fd, INVALID_CHARACTER_IN_MAP);
-			x++;
-		}
-		y++;
-	}
+	return (SUCCESS);
 }

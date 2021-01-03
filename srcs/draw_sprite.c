@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/12 11:06:52 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/02 14:24:06 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/03 16:00:04 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void			add_sprite_to_list(t_data *d, t_ray *ray, t_player p)
 
 	if (!(sp = (t_sprite *)malloc(sizeof(t_sprite))))
 	{
-		ft_lstclear(&d->ray.sprite_lst, free);
+		ft_lstclear(&ray->sprite_lst, free);
 		finish_program(d, MALLOC_ERROR);
 	}
 	sp->dist_to_sprite = get_dist_to_sprite(*ray, p);
@@ -73,7 +73,7 @@ void			add_sprite_to_list(t_data *d, t_ray *ray, t_player p)
 		if (!(new = ft_lstnew(sp)))
 		{
 			free(sp);
-			ft_lstclear(&d->ray.sprite_lst, free);
+			ft_lstclear(&ray->sprite_lst, free);
 			finish_program(d, MALLOC_ERROR);
 		}
 		ft_lstadd_front(&ray->sprite_lst, new);
@@ -105,8 +105,6 @@ void			draw_sprite_one_line(t_data *d, int draw_x,
 	int				draw_y;
 
 	set_info_of_draw_sprite(d, sp, tex, info);
-	if (d->img.endian == 1)
-		draw_x = d->win.width - draw_x - 1;
 	draw_y = 0;
 	while (draw_y < d->win.height)
 	{

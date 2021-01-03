@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:18:37 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/02 14:46:25 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/03 17:32:29 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@
 # include <fcntl.h>
 # include <stdio.h>
 
-# define MAX(x, y) (x > y) ? x : y
 # define BUFFER_SIZE 1000
 # define ESC_KEY 53
 # define W_KEY 13
@@ -36,8 +35,10 @@
 # define WEST 2
 # define EAST 3
 # define SPRITE 4
-# define FLOOR 5
-# define CEIL 6
+# define FLOOR 0
+# define CEIL 1
+# define NOT_READ -1
+# define NO_OPEN -1
 # define OUT_OF_RANGE -1
 # define PI 3.14159265359
 # define MOVE 0.25
@@ -48,25 +49,25 @@
 # define FILE_OPEN_ERROR 2
 # define NOT_ENOUGH_ELEMENT 3
 # define GNL_ERROR 4
-# define R_DOUBLE_READ 6
-# define R_NOT_NUMBER 7
-# define R_OUT_OF_RANGE 8
-# define NOT_ENOUGH_ELEMENT_OR_INVALID_SETTING 9
-# define TEX_DOUBLE_READ 10
-# define TEX_INVALID_EXTENSION 11
-# define COLOR_DOUBLE_READ 13
-# define COLOR_NOT_TWO_COMMAS 14
-# define COLOR_NOT_NUMBER 15
-# define COLOR_OUT_OF_RANGE 16
-# define NOT_END_MAP 17
-# define SMALL_MAP 18
-# define PLAYER_DOUBLE 19
-# define INVALID_CHARACTER_IN_MAP 20
-# define NOT_DETECTED_PLAYER 21
-# define DETECTED_SPACE_IN_ROOM 22
-# define NOT_ARROUND_WALL 23
-# define COMMAND_LINE_ERROR 24
-# define NOT_CUB_FILE 25
+# define R_DOUBLE_READ 5
+# define R_NOT_NUMBER 6
+# define R_OUT_OF_RANGE 7
+# define NOT_ENOUGH_ELEMENT_OR_INVALID_SETTING 8
+# define TEX_DOUBLE_READ 9
+# define TEX_INVALID_EX 10
+# define COLOR_DOUBLE_READ 11
+# define COLOR_NOT_TWO_COMMAS 12
+# define COLOR_NOT_NUMBER 13
+# define COLOR_OUT_OF_RANGE 14
+# define NOT_END_MAP 15
+# define PLAYER_DOUBLE_READ 16
+# define INVALID_CHARACTER_IN_MAP 17
+# define NOT_DETECTED_PLAYER 18
+# define DETECTED_SPACE_IN_MAP 19
+# define NOT_SURROUNDED_WALL 20
+# define COMMAND_LINE_ERROR 21
+# define NOT_CUB_FILE 22
+# define INVALD_ELEMENT_OR_INVALID_CHARACTER 23
 # define FILE_SIZE 0
 # define OFFSET_TO_DATA 1
 # define INFO_HEADER_SIZE 2
@@ -75,7 +76,7 @@
 # define DATA_SIZE 5
 # define BMP_FILE_HEADER_SIZE 14
 # define BMP_INFO_HEADER_SIZE 40
-# define BMP_HEADER_SIZE (BMP_FILE_HEADER_SIZE + BMP_INFO_HEADER_SIZE)
+# define BMP_HEADER_SIZE 54
 # define TEX_HEIGHT 0
 # define WIN_HALF_HEIGHT 1
 # define TEX_START 2
@@ -123,8 +124,7 @@ typedef struct		s_stage {
 	char			**map;
 	int				height;
 	int				width;
-	unsigned int	f_color;
-	unsigned int	c_color;
+	int				color[2];
 }					t_stage;
 
 typedef struct		s_player {
@@ -143,29 +143,29 @@ typedef struct		s_data {
 	t_win			win;
 	t_stage			stage;
 	t_player		player;
-	t_ray			ray;
 	t_img			img;
 	t_tex			tex[5];
 	char			error_msg[30][50];
+	int				fd;
 }					t_data;
 
 void				free_double_pointer(char **str);
 void				finish_program(t_data *d, int error_nbr);
 void				finish_reading_conf_file(t_data *d, int fd, int error_nbr);
 void				read_conf_file(t_data *d, char *conf_file);
-int					branch_size_tex_color(t_data *d, char **str,
-													char *read_flags);
+int					branch_size_tex_color(t_data *d, char **str);
 t_list				*add_map_lines_to_list(t_data *d, int fd);
-void				create_map_from_list(t_data *d, int fd,
-											t_list *lst, t_stage *stage);
-void				check_characters_of_map(t_data *d, int fd,
-													int *player_flag);
-void				check_closed_map(t_data *d, int fd, t_stage stage);
+int					check_characters_of_map_line(t_player *player,
+															char *line, int y);
+int					add_map_line_to_list(t_list **lst, char *line);
+int					create_map_from_list(t_list *lst, t_stage *stage);
+int					check_closed_map(t_player player, t_stage stage);
 void				draw_to_img(t_data *d);
 void				add_sprite_to_list(t_data *d, t_ray *ray, t_player p);
 void				draw_sprite_one_line(t_data *d, int draw_x,
 													t_sprite sp, t_tex tex);
 int					deal_key(int key, t_data *d);
+int					finish_program_by_destory(t_data *d);
 void				save_bmp(t_data *d, t_img img);
 int					get_next_line(int fd, char **line);
 

@@ -25,7 +25,7 @@ all		:	$(NAME)
 $(NAME)	:	$(LIBNAME) $(LIBXNAME) $(OBJS)
 			cp $(LIBX) ./
 			$(CC) $(CFLAGS)　$(INCLUDE) $(LIB) $(LIBXNAME) $(OBJS) -o $(NAME)
-# $(CC) $(CFLAGS)　$(INCLUDE) $(LIB) $(LIBXNAME) -g -fsanitize=address $(OBJS) -o $(NAME)
+			# $(CC) $(CFLAGS)　$(INCLUDE) $(LIB) $(LIBXNAME) -g -fsanitize=address $(OBJS) -o $(NAME)
 
 $(LIBNAME):
 			make -C $(LIBDIR)

@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 11:35:25 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/02 14:41:04 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/03 15:59:19 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,31 +64,29 @@ static double	get_dist_to_wall(t_data *d, t_ray *ray, char **map)
 	return (ray->dist_to_wall);
 }
 
-static void		set_info_of_draw_wall(t_data *d, int *draw_x,
+static void		set_info_of_draw_wall(t_data *d, t_ray ray,
 													t_tex tex, int info[6])
 {
 	double ratio_x;
 
 	info[WIN_HALF_HEIGHT] = d->win.height / 2;
-	info[TEX_HEIGHT] = (int)((double)d->win.height / d->ray.dist_to_wall);
+	info[TEX_HEIGHT] = (int)((double)d->win.height / ray.dist_to_wall);
 	info[TEX_START] = info[WIN_HALF_HEIGHT] - info[TEX_HEIGHT] / 2;
 	info[TEX_END] = info[TEX_START] + info[TEX_HEIGHT];
-	if (d->ray.hit_side == WEST || d->ray.hit_side == EAST)
-		ratio_x = d->player.pos.y + d->ray.dist_to_wall * d->ray.y;
+	if (ray.hit_side == WEST || ray.hit_side == EAST)
+		ratio_x = d->player.pos.y + ray.dist_to_wall * ray.y;
 	else
-		ratio_x = d->player.pos.x + d->ray.dist_to_wall * d->ray.x;
-	if (d->ray.hit_side == SOUTH || d->ray.hit_side == WEST)
+		ratio_x = d->player.pos.x + ray.dist_to_wall * ray.x;
+	if (ray.hit_side == SOUTH || ray.hit_side == WEST)
 		ratio_x = ratio_x - floor(ratio_x);
 	else
 		ratio_x = ceil(ratio_x) - ratio_x;
 	info[TEX_X] = (int)(ratio_x * (double)tex.width);
-	if (d->img.endian == 1)
-		*draw_x = d->win.width - *draw_x - 1;
 	if (tex.img.endian == 1)
 		info[TEX_X] = tex.width - info[TEX_X] - 1;
 }
 
-static void		draw_wall_one_line(t_data *d, int draw_x, t_tex tex)
+static void		draw_wall_one_line(t_data *d, int draw_x, t_ray ray, t_tex tex)
 {
 	int				info[6];
 	double			ratio_y;
@@ -96,7 +94,7 @@ static void		draw_wall_one_line(t_data *d, int draw_x, t_tex tex)
 	char			*dst;
 	int				draw_y;
 
-	set_info_of_draw_wall(d, &draw_x, tex, info);
+	set_info_of_draw_wall(d, ray, tex, info);
 	draw_y = -1;
 	while (++draw_y < d->win.height)
 	{
@@ -108,9 +106,9 @@ static void		draw_wall_one_line(t_data *d, int draw_x, t_tex tex)
 			* tex.img.line_length + info[TEX_X] * (tex.img.bits_per_pixel / 8));
 		}
 		else if (draw_y < info[WIN_HALF_HEIGHT])
-			color = d->stage.c_color;
+			color = d->stage.color[CEIL];
 		else
-			color = d->stage.f_color;
+			color = d->stage.color[FLOOR];
 		dst = d->img.addr + draw_y * d->img.line_length
 										+ draw_x * (d->img.bits_per_pixel / 8);
 		*(unsigned int *)dst = color;
@@ -119,7 +117,7 @@ static void		draw_wall_one_line(t_data *d, int draw_x, t_tex tex)
 
 void			draw_to_img(t_data *d)
 {
-	t_ray		*ray;
+	t_ray		ray;
 	int			draw_x;
 	t_sprite	sprite;
 	t_list		*next;
@@ -127,18 +125,19 @@ void			draw_to_img(t_data *d)
 	draw_x = 0;
 	while (draw_x < d->win.width)
 	{
-		d->ray = get_ray(d->player, draw_x, d->win.width);
-		ray = &d->ray;
-		ray->dist_to_wall = get_dist_to_wall(d, ray, d->stage.map);
-		draw_wall_one_line(d, draw_x, d->tex[ray->hit_side]);
-		while (ray->sprite_lst != NULL)
+		if (d->img.endian == 1)
+			draw_x = d->win.width - draw_x - 1;
+		ray = get_ray(d->player, draw_x, d->win.width);
+		ray.dist_to_wall = get_dist_to_wall(d, &ray, d->stage.map);
+		draw_wall_one_line(d, draw_x, ray, d->tex[ray.hit_side]);
+		while (ray.sprite_lst != NULL)
 		{
-			sprite = *(t_sprite *)ray->sprite_lst->content;
+			sprite = *(t_sprite *)ray.sprite_lst->content;
 			draw_sprite_one_line(d, draw_x, sprite, d->tex[SPRITE]);
-			next = ray->sprite_lst->next;
-			free(ray->sprite_lst->content);
-			free(ray->sprite_lst);
-			ray->sprite_lst = next;
+			next = ray.sprite_lst->next;
+			free(ray.sprite_lst->content);
+			free(ray.sprite_lst);
+			ray.sprite_lst = next;
 		}
 		draw_x += 1;
 	}

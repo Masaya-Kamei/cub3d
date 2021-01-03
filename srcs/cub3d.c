@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:30:35 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/02 14:48:53 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/03 17:32:51 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,11 @@ void		finish_program(t_data *d, int error_nbr)
 {
 	if (error_nbr != SUCCESS && error_nbr != FILE_OPEN_ERROR)
 	{
-		write(2, "Error\n", 7);
+		write(2, "Error\n", 6);
 		write(2, d->error_msg[error_nbr], ft_strlen(d->error_msg[error_nbr]));
 	}
+	if (d->fd != NO_OPEN)
+		close(d->fd);
 	if (d->stage.map != NULL)
 		free_double_pointer(d->stage.map);
 	if (d->tex[NOUTH].img.img != NULL)
@@ -54,29 +56,29 @@ static void	set_error_msg(char e[30][50])
 {
 	ft_strlcpy(e[MALLOC_ERROR], "Malloc error\n", 14);
 	ft_strlcpy(e[NOT_ENOUGH_ELEMENT], "Not enough element\n", 20);
-	ft_strlcpy(e[GNL_ERROR], "Get_next_line error\n", 11);
-	ft_strlcpy(e[R_DOUBLE_READ], "R element was read in double\n", 23);
-	ft_strlcpy(e[R_NOT_NUMBER], "R element is not number\n", 22);
-	ft_strlcpy(e[R_OUT_OF_RANGE], "R element is out of range", 23);
+	ft_strlcpy(e[GNL_ERROR], "Get_next_line error\n", 21);
+	ft_strlcpy(e[R_DOUBLE_READ], "R element was read in double\n", 30);
+	ft_strlcpy(e[R_NOT_NUMBER], "R element is not number\n", 25);
+	ft_strlcpy(e[R_OUT_OF_RANGE], "R element is out of range\n", 27);
 	ft_strlcpy(e[NOT_ENOUGH_ELEMENT_OR_INVALID_SETTING],
 								"Not enough elements or Invalid setting\n", 40);
 	ft_strlcpy(e[TEX_DOUBLE_READ], "Texture element was read in double\n", 36);
-	ft_strlcpy(e[TEX_INVALID_EXTENSION],
-								"Texture element is invalid extension\n", 38);
-	ft_strlcpy(e[COLOR_DOUBLE_READ], "Color element was read in double\n", 27);
+	ft_strlcpy(e[TEX_INVALID_EX], "Texture element is invalid extension\n", 38);
+	ft_strlcpy(e[COLOR_DOUBLE_READ], "Color element was read in double\n", 34);
 	ft_strlcpy(e[COLOR_NOT_TWO_COMMAS],
-								"Color element doesn't have two commas\n", 30);
-	ft_strlcpy(e[COLOR_NOT_NUMBER], "Color element is not number\n", 26);
-	ft_strlcpy(e[COLOR_OUT_OF_RANGE], "Color element is out of range\n", 28);
-	ft_strlcpy(e[NOT_END_MAP], "There are characters under the map\n", 36);
-	ft_strlcpy(e[SMALL_MAP], "SMALL_MAP\n", 11);
-	ft_strlcpy(e[PLAYER_DOUBLE], "PLAYER_DOUBLE\n", 15);
-	ft_strlcpy(e[INVALID_CHARACTER_IN_MAP], "INVALID_CHARACTER_IN_MAP\n", 26);
-	ft_strlcpy(e[NOT_DETECTED_PLAYER], "NOT_DETECTED_PLAYER\n", 21);
-	ft_strlcpy(e[DETECTED_SPACE_IN_ROOM], "DETECTED_SPACE_IN_ROOM\n", 24);
-	ft_strlcpy(e[NOT_ARROUND_WALL], "NOT_ARROUND_WALL\n", 18);
+								"Color element doesn't have two commas\n", 39);
+	ft_strlcpy(e[COLOR_NOT_NUMBER], "Color element is not number\n", 29);
+	ft_strlcpy(e[COLOR_OUT_OF_RANGE], "Color element is out of range\n", 31);
+	ft_strlcpy(e[NOT_END_MAP], "There is a element under the map\n", 34);
+	ft_strlcpy(e[PLAYER_DOUBLE_READ], "Player was read in double\n", 27);
+	ft_strlcpy(e[INVALID_CHARACTER_IN_MAP], "Invalid character in map\n", 26);
+	ft_strlcpy(e[NOT_DETECTED_PLAYER], "Couldn't detect a player\n", 26);
+	ft_strlcpy(e[DETECTED_SPACE_IN_MAP], "Detected a space in map\n", 25);
+	ft_strlcpy(e[NOT_SURROUNDED_WALL], "Map is not surrounded by walls\n", 32);
 	ft_strlcpy(e[COMMAND_LINE_ERROR], "Command line arguments error\n", 30);
 	ft_strlcpy(e[NOT_CUB_FILE], "First command line argument isn't .cub\n", 40);
+	ft_strlcpy(e[INVALD_ELEMENT_OR_INVALID_CHARACTER],
+						"Invalid element or Invalid character in map\n", 45);
 }
 
 static void	initialize_data(t_data *d)
@@ -89,6 +91,12 @@ static void	initialize_data(t_data *d)
 	d->tex[EAST].img.img = NULL;
 	d->tex[WEST].img.img = NULL;
 	d->tex[SPRITE].img.img = NULL;
+	d->win.width = NOT_READ;
+	d->win.height = NOT_READ;
+	d->stage.color[FLOOR] = NOT_READ;
+	d->stage.color[CEIL] = NOT_READ;
+	d->player.pos.x = NOT_READ;
+	d->fd = NO_OPEN;
 	set_error_msg(d->error_msg);
 }
 
@@ -116,6 +124,7 @@ int			main(int argc, char *argv[])
 	d.win.win = mlx_new_window(d.mlx, d.win.width, d.win.height, "FPS");
 	mlx_put_image_to_window(d.mlx, d.win.win, d.img.img, 0, 0);
 	mlx_hook(d.win.win, 2, 1L << 0, deal_key, &d);
+	mlx_hook(d.win.win, 17, 1L << 17, finish_program_by_destory, &d);
 	mlx_loop(d.mlx);
 	return (0);
 }
