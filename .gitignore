@@ -1,0 +1,11 @@
+*.o
+cub3D
+*.dylib
+*.a
+minilibx/mlx_image.swiftdoc
+minilibx/mlx_image.swiftmodule
+minilibx/mlx_init.swiftdoc
+minilibx/mlx_init.swiftmodule
+minilibx/mlx_window.swiftdoc
+minilibx/mlx_window.swiftmodule
+capture.bmp

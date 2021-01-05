@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:18:37 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/05 19:02:17 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/05 19:50:47 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,13 @@
 # include <stdio.h>
 
 # if __linux__
-#  define ESC_KEY 53
-#  define W_KEY 13
-#  define A_KEY 0
-#  define S_KEY 1
-#  define D_KEY 2
-#  define LEFT_KEY 123
-#  define RIGHT_KEY 124
+#  define ESC_KEY 65307
+#  define W_KEY 119
+#  define A_KEY 97
+#  define S_KEY 115
+#  define D_KEY 100
+#  define LEFT_KEY 65361
+#  define RIGHT_KEY 65363
 #  define DESTROY_EVENT 33
 # else
 #  define ESC_KEY 53
