@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 12:00:09 by mkamei            #+#    #+#             */
-/*   Updated: 2020/12/31 19:31:52 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/05 17:59:09 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,8 @@ void		save_bmp(t_data *d, t_img img)
 		perror("capture.bmp");
 		finish_program(d, FILE_OPEN_ERROR);
 	}
+	img.width = d->win.width;
+	img.height = d->win.height;
 	write_bmp_header(img, fd, &real_width);
 	ret = write_bmp_data(img, fd, real_width);
 	close(fd);

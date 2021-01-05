@@ -6,11 +6,17 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:16:58 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/03 17:39:03 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/05 18:36:32 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+static void	finish_reading_conf_file(t_data *d, int ret)
+{
+	close(d->fd);
+	finish_program(d, ret);
+}
 
 static void	read_size_tex_color(t_data *d)
 {
@@ -27,17 +33,17 @@ static void	read_size_tex_color(t_data *d)
 		|| d->stage.color[CEIL] == NOT_READ)
 	{
 		if (gnl_flag == 0)
-			finish_program(d, NOT_ENOUGH_ELEMENT);
+			finish_reading_conf_file(d, NOT_ENOUGH_ELEMENT);
 		if ((gnl_flag = get_next_line(d->fd, &line)) == -1)
-			finish_program(d, GNL_ERROR);
+			finish_reading_conf_file(d, GNL_ERROR);
 		str = ft_split(line, ' ');
 		free(line);
 		if (str == NULL)
-			finish_program(d, MALLOC_ERROR);
+			finish_reading_conf_file(d, MALLOC_ERROR);
 		ret = branch_size_tex_color(d, str);
 		free_double_pointer(str);
 		if (ret != SUCCESS)
-			finish_program(d, ret);
+			finish_reading_conf_file(d, ret);
 	}
 }
 
@@ -47,6 +53,7 @@ static void	finish_reading_map(t_data *d, char *line, t_list **lst, int ret)
 		free(line);
 	if (lst != NULL)
 		ft_lstclear(lst, free);
+	close(d->fd);
 	finish_program(d, ret);
 }
 
@@ -91,5 +98,4 @@ void		read_conf_file(t_data *d, char *conf_file)
 	read_size_tex_color(d);
 	read_map(d);
 	close(d->fd);
-	d->fd = NO_OPEN;
 }

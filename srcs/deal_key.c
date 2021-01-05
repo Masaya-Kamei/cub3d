@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 16:08:20 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/03 17:52:59 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/05 18:25:28 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static void	rotate_player(t_player *p, int key)
 	p->plane.y = tmp * sin(radian) + p->plane.y * cos(radian);
 }
 
-int			deal_key(int key, t_data *d)
+int			deal_key_by_keydown(int key, t_data *d)
 {
 	if (key == ESC_KEY)
 		finish_program(d, SUCCESS);
@@ -93,11 +93,5 @@ int			deal_key(int key, t_data *d)
 		draw_to_img(d);
 		mlx_put_image_to_window(d->mlx, d->win.win, d->img.img, 0, 0);
 	}
-	return (1);
-}
-
-int			finish_program_by_destory(t_data *d)
-{
-	finish_program(d, SUCCESS);
 	return (1);
 }

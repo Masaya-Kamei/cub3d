@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:30:35 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/03 17:32:51 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/05 19:01:06 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,32 +24,26 @@ void		free_double_pointer(char **str)
 
 void		finish_program(t_data *d, int error_nbr)
 {
+	int i;
+
 	if (error_nbr != SUCCESS && error_nbr != FILE_OPEN_ERROR)
 	{
 		write(2, "Error\n", 6);
 		write(2, d->error_msg[error_nbr], ft_strlen(d->error_msg[error_nbr]));
 	}
-	if (d->fd != NO_OPEN)
-		close(d->fd);
 	if (d->stage.map != NULL)
 		free_double_pointer(d->stage.map);
-	if (d->tex[NOUTH].img.img != NULL)
-		mlx_destroy_image(d->mlx, d->tex[NOUTH].img.img);
-	if (d->tex[SOUTH].img.img != NULL)
-		mlx_destroy_image(d->mlx, d->tex[SOUTH].img.img);
-	if (d->tex[EAST].img.img != NULL)
-		mlx_destroy_image(d->mlx, d->tex[EAST].img.img);
-	if (d->tex[WEST].img.img != NULL)
-		mlx_destroy_image(d->mlx, d->tex[WEST].img.img);
-	if (d->tex[SPRITE].img.img != NULL)
-		mlx_destroy_image(d->mlx, d->tex[SPRITE].img.img);
+	i = -1;
+	while (++i < 5)
+		if (d->tex[i].img.img != NULL)
+			mlx_destroy_image(d->mlx, d->tex[i].img.img);
 	if (d->img.img != NULL)
 		mlx_destroy_image(d->mlx, d->img.img);
 	if (d->win.win != NULL)
 		mlx_destroy_window(d->mlx, d->win.win);
+	if (d->mlx != NULL)
+		destroy_display(d);
 	exit(0);
-	// printf("end\n");
-	// while (1){};
 }
 
 static void	set_error_msg(char e[30][50])
@@ -96,7 +90,6 @@ static void	initialize_data(t_data *d)
 	d->stage.color[FLOOR] = NOT_READ;
 	d->stage.color[CEIL] = NOT_READ;
 	d->player.pos.x = NOT_READ;
-	d->fd = NO_OPEN;
 	set_error_msg(d->error_msg);
 }
 
@@ -116,15 +109,15 @@ int			main(int argc, char *argv[])
 	d.img.img = mlx_new_image(d.mlx, d.win.width, d.win.height);
 	d.img.addr = mlx_get_data_addr(d.img.img, &d.img.bits_per_pixel,
 										&d.img.line_length, &d.img.endian);
-	d.img.width = d.win.width;
-	d.img.height = d.win.height;
 	draw_to_img(&d);
 	if (argc == 3)
 		save_bmp(&d, d.img);
 	d.win.win = mlx_new_window(d.mlx, d.win.width, d.win.height, "FPS");
 	mlx_put_image_to_window(d.mlx, d.win.win, d.img.img, 0, 0);
-	mlx_hook(d.win.win, 2, 1L << 0, deal_key, &d);
-	mlx_hook(d.win.win, 17, 1L << 17, finish_program_by_destory, &d);
+	mlx_hook(d.win.win, KEYDOWN_EVENT, 1L << 0, deal_key_by_keydown, &d);
+	mlx_hook(d.win.win, DESTROY_EVENT, 1L << 17, finish_program_by_destory, &d);
+	mlx_hook(d.win.win, FOCUSIN_EVENT, 1L << 21,
+											put_image_to_window_by_focusin, &d);
 	mlx_loop(d.mlx);
 	return (0);
 }

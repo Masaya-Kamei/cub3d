@@ -6,14 +6,18 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:18:37 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/03 17:32:29 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/05 19:02:17 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# include "../minilibx/mlx.h"
+# if __linux__
+#  include "../minilibx-linux/mlx.h"
+# else
+#  include "../minilibx/mlx.h"
+# endif
 # include "../libft/libft.h"
 # include <unistd.h>
 # include <string.h>
@@ -22,14 +26,27 @@
 # include <fcntl.h>
 # include <stdio.h>
 
-# define BUFFER_SIZE 1000
-# define ESC_KEY 53
-# define W_KEY 13
-# define A_KEY 0
-# define S_KEY 1
-# define D_KEY 2
-# define LEFT_KEY 123
-# define RIGHT_KEY 124
+# if __linux__
+#  define ESC_KEY 53
+#  define W_KEY 13
+#  define A_KEY 0
+#  define S_KEY 1
+#  define D_KEY 2
+#  define LEFT_KEY 123
+#  define RIGHT_KEY 124
+#  define DESTROY_EVENT 33
+# else
+#  define ESC_KEY 53
+#  define W_KEY 13
+#  define A_KEY 0
+#  define S_KEY 1
+#  define D_KEY 2
+#  define LEFT_KEY 123
+#  define RIGHT_KEY 124
+#  define DESTROY_EVENT 17
+# endif
+# define KEYDOWN_EVENT 2
+# define FOCUSIN_EVENT 9
 # define NOUTH 0
 # define SOUTH 1
 # define WEST 2
@@ -37,8 +54,8 @@
 # define SPRITE 4
 # define FLOOR 0
 # define CEIL 1
+# define BUFFER_SIZE 1000
 # define NOT_READ -1
-# define NO_OPEN -1
 # define OUT_OF_RANGE -1
 # define PI 3.14159265359
 # define MOVE 0.25
@@ -93,6 +110,7 @@ typedef struct		s_img {
 	int				width;
 	int				height;
 }					t_img;
+
 typedef struct		s_vector {
 	double			x;
 	double			y;
@@ -151,7 +169,6 @@ typedef struct		s_data {
 
 void				free_double_pointer(char **str);
 void				finish_program(t_data *d, int error_nbr);
-void				finish_reading_conf_file(t_data *d, int fd, int error_nbr);
 void				read_conf_file(t_data *d, char *conf_file);
 int					branch_size_tex_color(t_data *d, char **str);
 t_list				*add_map_lines_to_list(t_data *d, int fd);
@@ -164,8 +181,10 @@ void				draw_to_img(t_data *d);
 void				add_sprite_to_list(t_data *d, t_ray *ray, t_player p);
 void				draw_sprite_one_line(t_data *d, int draw_x,
 													t_sprite sp, t_tex tex);
-int					deal_key(int key, t_data *d);
+int					deal_key_by_keydown(int key, t_data *d);
+void				destroy_display(t_data *d);
 int					finish_program_by_destory(t_data *d);
+int					put_image_to_window_by_focusin(t_data *d);
 void				save_bmp(t_data *d, t_img img);
 int					get_next_line(int fd, char **line);
 
