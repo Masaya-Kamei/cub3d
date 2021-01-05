@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:18:37 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/05 19:50:47 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/05 20:13:15 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,8 +182,8 @@ void				add_sprite_to_list(t_data *d, t_ray *ray, t_player p);
 void				draw_sprite_one_line(t_data *d, int draw_x,
 													t_sprite sp, t_tex tex);
 int					deal_key_by_keydown(int key, t_data *d);
-void				destroy_display(t_data *d);
-int					finish_program_by_destory(t_data *d);
+void				free_mlx_ptr(t_data *d);
+int					finish_program_by_destroy(t_data *d);
 int					put_image_to_window_by_focusin(t_data *d);
 void				save_bmp(t_data *d, t_img img);
 int					get_next_line(int fd, char **line);

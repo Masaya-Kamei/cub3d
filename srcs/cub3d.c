@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:30:35 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/05 19:01:06 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/05 20:13:35 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void		finish_program(t_data *d, int error_nbr)
 	if (d->win.win != NULL)
 		mlx_destroy_window(d->mlx, d->win.win);
 	if (d->mlx != NULL)
-		destroy_display(d);
+		free_mlx_ptr(d);
 	exit(0);
 }
 
@@ -115,7 +115,7 @@ int			main(int argc, char *argv[])
 	d.win.win = mlx_new_window(d.mlx, d.win.width, d.win.height, "FPS");
 	mlx_put_image_to_window(d.mlx, d.win.win, d.img.img, 0, 0);
 	mlx_hook(d.win.win, KEYDOWN_EVENT, 1L << 0, deal_key_by_keydown, &d);
-	mlx_hook(d.win.win, DESTROY_EVENT, 1L << 17, finish_program_by_destory, &d);
+	mlx_hook(d.win.win, DESTROY_EVENT, 1L << 17, finish_program_by_destroy, &d);
 	mlx_hook(d.win.win, FOCUSIN_EVENT, 1L << 21,
 											put_image_to_window_by_focusin, &d);
 	mlx_loop(d.mlx);

@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/05 18:03:49 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/05 19:03:50 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/05 20:13:05 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #if __linux__
 
-void	destroy_display(t_data *d)
+void	free_mlx_ptr(t_data *d)
 {
 	mlx_destroy_display(d->mlx);
 	free(d->mlx);
@@ -22,14 +22,14 @@ void	destroy_display(t_data *d)
 
 #else
 
-void	destroy_display(t_data *d)
+void	free_mlx_ptr(t_data *d)
 {
 	d = (t_data *)d;
 }
 
 #endif
 
-int		finish_program_by_destory(t_data *d)
+int		finish_program_by_destroy(t_data *d)
 {
 	finish_program(d, SUCCESS);
 	return (1);
