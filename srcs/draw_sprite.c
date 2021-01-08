@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/12 11:06:52 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/03 16:00:04 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/07 16:27:55 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,13 @@ static double	get_ratio_x_of_sprite(t_ray ray, t_player p)
 	double		theta;
 	double		ratio_x;
 
-	vec.x = (ray.tip.x + 0.5 + 0.5 * p.dir.y) - p.pos.x;
-	vec.y = (ray.tip.y + 0.5 - 0.5 * p.dir.x) - p.pos.y;
-	theta_l = acos((vec.x * -p.dir.y + vec.y * p.dir.x) / hypot(vec.x, vec.y));
-	vec.x = (ray.tip.x + 0.5 - 0.5 * p.dir.y) - p.pos.x;
-	vec.y = (ray.tip.y + 0.5 + 0.5 * p.dir.x) - p.pos.y;
-	theta_r = acos((vec.x * -p.dir.y + vec.y * p.dir.x) / hypot(vec.x, vec.y));
-	theta = acos((ray.x * -p.dir.y + ray.y * p.dir.x) / hypot(ray.x, ray.y));
+	vec.x = ray.tip.x + 0.5 - p.pos.x + p.dir.y * 0.5;
+	vec.y = ray.tip.y + 0.5 - p.pos.y - p.dir.x * 0.5;
+	theta_r = acos((vec.x * p.dir.y + vec.y * -p.dir.x) / hypot(vec.x, vec.y));
+	vec.x = ray.tip.x + 0.5 - p.pos.x - p.dir.y * 0.5;
+	vec.y = ray.tip.y + 0.5 - p.pos.y + p.dir.x * 0.5;
+	theta_l = acos((vec.x * p.dir.y + vec.y * -p.dir.x) / hypot(vec.x, vec.y));
+	theta = acos((ray.x * p.dir.y + ray.y * -p.dir.x) / hypot(ray.x, ray.y));
 	if (theta_r <= theta && theta <= theta_l)
 		ratio_x = (theta_l - theta) / (theta_l - theta_r);
 	else

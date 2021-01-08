@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 11:35:25 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/03 15:59:19 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/08 19:46:52 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ static void		set_info_of_draw_wall(t_data *d, t_ray ray,
 	if (ray.hit_side == SOUTH || ray.hit_side == WEST)
 		ratio_x = ratio_x - floor(ratio_x);
 	else
-		ratio_x = ceil(ratio_x) - ratio_x;
+		ratio_x = floor(ratio_x) + 1 - ratio_x;
 	info[TEX_X] = (int)(ratio_x * (double)tex.width);
 	if (tex.img.endian == 1)
 		info[TEX_X] = tex.width - info[TEX_X] - 1;
@@ -125,10 +125,10 @@ void			draw_to_img(t_data *d)
 	draw_x = 0;
 	while (draw_x < d->win.width)
 	{
-		if (d->img.endian == 1)
-			draw_x = d->win.width - draw_x - 1;
 		ray = get_ray(d->player, draw_x, d->win.width);
 		ray.dist_to_wall = get_dist_to_wall(d, &ray, d->stage.map);
+		if (d->img.endian == 1)
+			draw_x = d->win.width - draw_x - 1;
 		draw_wall_one_line(d, draw_x, ray, d->tex[ray.hit_side]);
 		while (ray.sprite_lst != NULL)
 		{
