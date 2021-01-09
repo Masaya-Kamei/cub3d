@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 16:48:13 by mkamei            #+#    #+#             */
-/*   Updated: 2020/12/20 18:31:54 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/09 03:02:02 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,26 +66,24 @@ static int	read_until_include_nl(int fd, char **line)
 	return (readsize);
 }
 
-int			get_next_line(int fd, char **line)
+int			get_next_line(int fd, char **line, char **save)
 {
-	static char *save;
-
 	if (fd < 0 || fd >= 256 || line == NULL || BUFFER_SIZE <= 0)
 		return (-1);
-	if (save == NULL)
+	if (*save == NULL)
 	{
 		if (!(*line = ft_strdup("")))
 			return (-1);
 	}
 	else
 	{
-		*line = save;
-		save = NULL;
+		*line = *save;
+		*save = NULL;
 	}
 	if (read_until_include_nl(fd, line) == -1)
 	{
 		free(*line);
 		return (-1);
 	}
-	return (create_line(line, &save));
+	return (create_line(line, save));
 }

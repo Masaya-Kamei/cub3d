@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:18:37 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/05 20:13:15 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/09 11:40:16 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,7 @@ typedef struct		s_data {
 	t_tex			tex[5];
 	char			error_msg[30][50];
 	int				fd;
+	char			*gnl_save;
 }					t_data;
 
 void				free_double_pointer(char **str);
@@ -172,9 +173,8 @@ void				finish_program(t_data *d, int error_nbr);
 void				read_conf_file(t_data *d, char *conf_file);
 int					branch_size_tex_color(t_data *d, char **str);
 t_list				*add_map_lines_to_list(t_data *d, int fd);
-int					check_characters_of_map_line(t_player *player,
-															char *line, int y);
-int					add_map_line_to_list(t_list **lst, char *line);
+int					add_map_line_to_list(t_player *player,
+												t_list **lst, char *line);
 int					create_map_from_list(t_list *lst, t_stage *stage);
 int					check_closed_map(t_player player, t_stage stage);
 void				draw_to_img(t_data *d);
@@ -186,6 +186,6 @@ void				free_mlx_ptr(t_data *d);
 int					finish_program_by_destroy(t_data *d);
 int					put_image_to_window_by_focusin(t_data *d);
 void				save_bmp(t_data *d, t_img img);
-int					get_next_line(int fd, char **line);
+int					get_next_line(int fd, char **line, char **save);
 
 #endif

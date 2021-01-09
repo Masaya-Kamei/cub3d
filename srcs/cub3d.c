@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:30:35 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/05 20:13:35 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/09 03:06:01 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ void		finish_program(t_data *d, int error_nbr)
 		write(2, "Error\n", 6);
 		write(2, d->error_msg[error_nbr], ft_strlen(d->error_msg[error_nbr]));
 	}
+	if (d->gnl_save != NULL)
+		free(d->gnl_save);
 	if (d->stage.map != NULL)
 		free_double_pointer(d->stage.map);
 	i = -1;
@@ -77,6 +79,7 @@ static void	set_error_msg(char e[30][50])
 
 static void	initialize_data(t_data *d)
 {
+	d->gnl_save = NULL;
 	d->stage.map = NULL;
 	d->img.img = NULL;
 	d->win.win = NULL;

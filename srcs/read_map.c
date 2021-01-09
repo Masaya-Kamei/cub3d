@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 14:41:50 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/03 17:34:43 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/09 11:35:37 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static void	get_player_vectors(t_player *player, char dir, int x, int y)
 	player->plane.y = player->dir.x * tan(VIEW_ANGLE * PI / 180);
 }
 
-int			check_characters_of_map_line(t_player *player, char *line, int y)
+static int	check_characters_of_map_line(t_player *player, char *line, int y)
 {
 	int x;
 
@@ -58,10 +58,11 @@ int			check_characters_of_map_line(t_player *player, char *line, int y)
 	return (SUCCESS);
 }
 
-int			add_map_line_to_list(t_list **lst, char *line)
+int			add_map_line_to_list(t_player *player, t_list **lst, char *line)
 {
 	t_list		*new;
 	static int	map_end = 0;
+	int			ret;
 
 	if (ft_strlen(line) == 0)
 	{
@@ -73,6 +74,9 @@ int			add_map_line_to_list(t_list **lst, char *line)
 	{
 		if (map_end == 1)
 			return (NOT_END_MAP);
+		ret = check_characters_of_map_line(player, line, ft_lstsize(*lst));
+		if (ret != SUCCESS)
+			return (ret);
 		if (!(new = ft_lstnew(line)))
 			return (MALLOC_ERROR);
 		ft_lstadd_back(lst, new);

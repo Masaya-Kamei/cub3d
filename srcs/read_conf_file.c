@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:16:58 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/05 18:36:32 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/09 11:41:26 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void	read_size_tex_color(t_data *d)
 	{
 		if (gnl_flag == 0)
 			finish_reading_conf_file(d, NOT_ENOUGH_ELEMENT);
-		if ((gnl_flag = get_next_line(d->fd, &line)) == -1)
+		if ((gnl_flag = get_next_line(d->fd, &line, &d->gnl_save)) == -1)
 			finish_reading_conf_file(d, GNL_ERROR);
 		str = ft_split(line, ' ');
 		free(line);
@@ -68,21 +68,20 @@ static void	read_map(t_data *d)
 	gnl_flag = 1;
 	while (gnl_flag != 0)
 	{
-		gnl_flag = get_next_line(d->fd, &line);
+		gnl_flag = get_next_line(d->fd, &line, &d->gnl_save);
 		if (gnl_flag == -1)
 			finish_reading_map(d, NULL, &lst, GNL_ERROR);
-		ret = check_characters_of_map_line(&d->player, line, ft_lstsize(lst));
-		if (ret != SUCCESS)
-			finish_reading_map(d, line, &lst, ret);
-		ret = add_map_line_to_list(&lst, line);
+		ret = add_map_line_to_list(&d->player, &lst, line);
 		if (ret != SUCCESS)
 			finish_reading_map(d, line, &lst, ret);
 	}
 	if (d->player.pos.x == NOT_READ)
 		finish_reading_map(d, NULL, &lst, NOT_DETECTED_PLAYER);
-	if ((ret = create_map_from_list(lst, &d->stage)) != SUCCESS)
+	ret = create_map_from_list(lst, &d->stage);
+	if (ret != SUCCESS)
 		finish_reading_map(d, NULL, &lst, ret);
-	if ((ret = check_closed_map(d->player, d->stage)) != SUCCESS)
+	ret = check_closed_map(d->player, d->stage);
+	if (ret != SUCCESS)
 		finish_reading_map(d, NULL, NULL, ret);
 }
 
