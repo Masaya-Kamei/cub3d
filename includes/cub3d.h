@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:18:37 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/09 12:30:55 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/09 13:13:20 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,7 @@ typedef struct		s_tex {
 	int				width;
 	int				height;
 }					t_tex;
+
 typedef struct		s_data {
 	void			*mlx;
 	t_win			win;
