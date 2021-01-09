@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 14:41:50 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/09 11:35:37 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/09 12:35:19 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int	check_characters_of_map_line(t_player *player, char *line, int y)
 			line[x] = '0';
 		}
 		else if (line[x] != '0' && line[x] != '1'
-			&& line[x] != '2' && line[x] != ' ')
+				&& line[x] != '2' && line[x] != ' ')
 		{
 			if (y == 0)
 				return (INVALD_ELEMENT_OR_INVALID_CHARACTER);
@@ -61,25 +61,28 @@ static int	check_characters_of_map_line(t_player *player, char *line, int y)
 int			add_map_line_to_list(t_player *player, t_list **lst, char *line)
 {
 	t_list		*new;
-	static int	map_end = 0;
+	static int	map_y = 0;
 	int			ret;
 
 	if (ft_strlen(line) == 0)
 	{
-		if (*lst != NULL)
-			map_end = 1;
+		if (map_y > 0)
+			map_y = MAP_END;
 		free(line);
 	}
 	else
 	{
-		if (map_end == 1)
+		if (map_y == MAP_END)
 			return (NOT_END_MAP);
-		ret = check_characters_of_map_line(player, line, ft_lstsize(*lst));
+		if (ft_strlen(line) > 100 || map_y > 100)
+			return (TOO_BIG_MAP);
+		ret = check_characters_of_map_line(player, line, map_y);
 		if (ret != SUCCESS)
 			return (ret);
 		if (!(new = ft_lstnew(line)))
 			return (MALLOC_ERROR);
 		ft_lstadd_back(lst, new);
+		map_y++;
 	}
 	return (SUCCESS);
 }

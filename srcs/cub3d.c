@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:30:35 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/09 03:06:01 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/09 12:20:24 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,13 @@ void		finish_program(t_data *d, int error_nbr)
 		free(d->gnl_save);
 	if (d->stage.map != NULL)
 		free_double_pointer(d->stage.map);
-	i = -1;
-	while (++i < 5)
+	i = 0;
+	while (i < 5)
+	{
 		if (d->tex[i].img.img != NULL)
 			mlx_destroy_image(d->mlx, d->tex[i].img.img);
+		i++;
+	}
 	if (d->img.img != NULL)
 		mlx_destroy_image(d->mlx, d->img.img);
 	if (d->win.win != NULL)
@@ -61,8 +64,7 @@ static void	set_error_msg(char e[30][50])
 	ft_strlcpy(e[TEX_DOUBLE_READ], "Texture element was read in double\n", 36);
 	ft_strlcpy(e[TEX_INVALID_EX], "Texture element is invalid extension\n", 38);
 	ft_strlcpy(e[COLOR_DOUBLE_READ], "Color element was read in double\n", 34);
-	ft_strlcpy(e[COLOR_NOT_TWO_COMMAS],
-								"Color element doesn't have two commas\n", 39);
+	ft_strlcpy(e[COLOR_NO_TWO_COMMAS], "Color element has no two commas\n", 33);
 	ft_strlcpy(e[COLOR_NOT_NUMBER], "Color element is not number\n", 29);
 	ft_strlcpy(e[COLOR_OUT_OF_RANGE], "Color element is out of range\n", 31);
 	ft_strlcpy(e[NOT_END_MAP], "There is a element under the map\n", 34);
@@ -75,6 +77,7 @@ static void	set_error_msg(char e[30][50])
 	ft_strlcpy(e[NOT_CUB_FILE], "First command line argument isn't .cub\n", 40);
 	ft_strlcpy(e[INVALD_ELEMENT_OR_INVALID_CHARACTER],
 						"Invalid element or Invalid character in map\n", 45);
+	ft_strlcpy(e[TOO_BIG_MAP], "Map is too big\n", 16);
 }
 
 static void	initialize_data(t_data *d)
@@ -83,6 +86,7 @@ static void	initialize_data(t_data *d)
 	d->stage.map = NULL;
 	d->img.img = NULL;
 	d->win.win = NULL;
+	d->mlx = NULL;
 	d->tex[NOUTH].img.img = NULL;
 	d->tex[SOUTH].img.img = NULL;
 	d->tex[EAST].img.img = NULL;

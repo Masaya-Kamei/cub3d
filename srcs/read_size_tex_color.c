@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/31 18:53:53 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/03 17:32:41 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/09 12:19:24 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ static int	read_color(t_data *d, char *color, int place)
 	if (!rgb_str[0] || !rgb_str[1] || !rgb_str[2] || rgb_str[3])
 	{
 		free_double_pointer(rgb_str);
-		return (COLOR_NOT_TWO_COMMAS);
+		return (COLOR_NO_TWO_COMMAS);
 	}
 	ret = get_rgb_nbr(rgb_str, rgb_nbr);
 	free_double_pointer(rgb_str);

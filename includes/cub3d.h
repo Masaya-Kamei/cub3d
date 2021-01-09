@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 11:18:37 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/09 11:40:16 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/09 12:30:55 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@
 # define BUFFER_SIZE 1000
 # define NOT_READ -1
 # define OUT_OF_RANGE -1
+# define MAP_END -1
 # define PI 3.14159265359
 # define MOVE 0.25
 # define RADIAN 0.1
@@ -73,7 +74,7 @@
 # define TEX_DOUBLE_READ 9
 # define TEX_INVALID_EX 10
 # define COLOR_DOUBLE_READ 11
-# define COLOR_NOT_TWO_COMMAS 12
+# define COLOR_NO_TWO_COMMAS 12
 # define COLOR_NOT_NUMBER 13
 # define COLOR_OUT_OF_RANGE 14
 # define NOT_END_MAP 15
@@ -85,6 +86,7 @@
 # define COMMAND_LINE_ERROR 21
 # define NOT_CUB_FILE 22
 # define INVALD_ELEMENT_OR_INVALID_CHARACTER 23
+# define TOO_BIG_MAP 24
 # define FILE_SIZE 0
 # define OFFSET_TO_DATA 1
 # define INFO_HEADER_SIZE 2
