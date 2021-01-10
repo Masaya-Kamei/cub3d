@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/31 18:53:53 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/09 13:49:27 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/10 13:28:14 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,20 @@ static int	read_window_size(void *mlx, t_win *win, char *width, char *height)
 	while (width[i] != '\0')
 		if (ft_isdigit(width[i++]) == 0)
 			return (R_NOT_NUMBER);
+	if (i < 3 || i > 10 || (i == 10 && ft_strncmp(width, "2147483647", 11) > 0))
+		return (R_OUT_OF_RANGE);
 	i = 0;
 	while (height[i] != '\0')
 		if (ft_isdigit(height[i++]) == 0)
 			return (R_NOT_NUMBER);
+	if (i < 3 || i > 10 ||
+					(i == 10 && ft_strncmp(height, "2147483647", 11) > 0))
+		return (R_OUT_OF_RANGE);
 	win->width = ft_atoi(width);
 	win->height = ft_atoi(height);
-	if (win->width <= 0 || win->height <= 0)
-		return (R_OUT_OF_RANGE);
 	mlx_get_screen_size(mlx, &max_width, &max_height);
-	if (win->width > max_width)
-		win->width = max_width;
-	if (win->height > max_height)
-		win->height = max_height;
+	win->width = (max_width < win->width) ? max_width : win->width;
+	win->height = (max_height < win->height) ? max_height : win->height;
 	return (SUCCESS);
 }
 
