@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/12 11:06:52 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/07 16:27:55 by mkamei           ###   ########.fr       */
+/*   Updated: 2021/01/14 12:11:22 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,15 @@
 static double	get_dist_to_sprite(t_ray ray, t_player p)
 {
 	t_vector	vec;
-	double		theta;
 	double		dist_to_sprite;
 
-	theta = atan(p.dir.x / p.dir.y);
 	vec.x = ray.tip.x + 0.5 - p.pos.x;
 	vec.y = ray.tip.y + 0.5 - p.pos.y;
 	if (acos((vec.x * p.dir.x + vec.y * p.dir.y) / hypot(vec.x, vec.y))
 																>= PI / 2)
 		dist_to_sprite = OUT_OF_RANGE;
 	else
-	{
-		dist_to_sprite = vec.x * sin(theta) + vec.y * cos(theta);
-		dist_to_sprite = fabs(dist_to_sprite);
-	}
+		dist_to_sprite = vec.x * p.dir.x + vec.y * p.dir.y;
 	return (dist_to_sprite);
 }
 
