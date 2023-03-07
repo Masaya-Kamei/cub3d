@@ -6,7 +6,7 @@
 /*   By: mkamei <mkamei@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 12:00:09 by mkamei            #+#    #+#             */
-/*   Updated: 2021/01/05 17:59:09 by mkamei           ###   ########.fr       */
+/*   Updated: 2023/03/07 13:13:14 by mkamei           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void		save_bmp(t_data *d, t_img img)
 	int real_width;
 	int ret;
 
-	fd = open("capture.bmp", O_CREAT | O_WRONLY);
+	fd = open("capture.bmp", O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd == -1)
 	{
 		write(2, "Error\n", 7);
